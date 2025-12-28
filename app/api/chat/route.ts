@@ -1,6 +1,5 @@
 import { anthropic, AnthropicProviderOptions } from "@ai-sdk/anthropic";
 import { UIMessage, convertToModelMessages } from "ai";
-import { Experimental_StdioMCPTransport } from '@ai-sdk/mcp/mcp-stdio';
 
 import { Experimental_Agent as Agent, stepCountIs } from 'ai';
 
@@ -15,11 +14,11 @@ import {
 
 // Lazy initialization of MCP clients and agent
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let calAgent: any = null;
+let workloadAgent: any = null;
 
-async function getCalAgent() {
-  if (calAgent) {
-    return calAgent;
+async function getWorkloadAgent() {
+  if (workloadAgent) {
+    return workloadAgent;
   }
 
   // Connect to an HTTP MCP server directly via the client transport config
@@ -32,54 +31,35 @@ async function getCalAgent() {
 
   const toolSetMinizinc = await minizinc.tools();
 
-  const transport = new Experimental_StdioMCPTransport({
-    command: 'npx',
-    args: ['-y', 'github:r33drichards/caldav-mcp'],
-    env: {
-      "CALDAV_BASE_URL": "https://docker-radicale-production.up.railway.app",
-      "CALDAV_USERNAME": "rwendt1337@gmail.com",
-      "CALDAV_PASSWORD": process.env.CALDAV_PASSWORD || "#XZ#5N4B*ZvoBC",
+  // Connect to Instances MCP server for AWS instance provisioning
+  const instances = await experimental_createMCPClient({
+    transport: {
+      type: 'sse',
+      url: 'https://instances-mcp.vantage.sh/mcp/e1e3a775-73b5-4afb-86c0-f433c8144b5a',
     },
   });
 
-  const caldav = await experimental_createMCPClient({
-    transport,
-  });
-
-  const toolSetCaldav = await caldav.tools();
-
-  // Connect to Time MCP server for timezone and time conversion capabilities
-  const timeTransport = new Experimental_StdioMCPTransport({
-    command: 'python3',
-    args: ['-m', 'mcp_server_time', '--local-timezone=America/New_York'],
-  });
-
-  const timeMcp = await experimental_createMCPClient({
-    transport: timeTransport,
-  });
-
-  const toolSetTime = await timeMcp.tools();
+  const toolSetInstances = await instances.tools();
 
   const tools = {
     ...toolSetMinizinc,
-    ...toolSetCaldav,
-    ...toolSetTime,
+    ...toolSetInstances,
   };
 
 
-  calAgent = new Agent({
+  workloadAgent = new Agent({
     model: anthropic("claude-haiku-4-5-20251001"),
     tools,
     stopWhen: stepCountIs(1000),
-    system: "you are a helpful assistant that can help me with my calendar. There is a bocce calendar you can find with list calendar tool. when you are finished with your task, write a short paragraph indicating that you are finished and summarize your task and how you solved it. always use timeout with minizinc, always use 30 second timeout. If a user doesn't specify when they want the games, scheduled, ask clarifying questions to figure out when to schedule games. if a user says eomthing like next week, use get current time mcp tool to get current time"
+    system: "You are a helpful AWS workload provisioning assistant that helps users cost-optimize their AWS infrastructure. Your role is to:\n\n1. Understand the user's workload requirements (CPU, memory, storage, network needs, etc.)\n2. Ask clarifying questions if any critical information is missing\n3. Use the instances MCP tool to get available AWS instance types and their specifications\n4. Use MiniZinc constraint solver (CSP) to bin-pack the workload across available instance types for optimal cost efficiency\n5. Always use a 30-second timeout when calling MiniZinc\n6. Present recommendations with cost breakdowns and justification\n\nWhen you complete a task, write a short paragraph summarizing what you did and how you solved the optimization problem."
   });
 
-  return calAgent;
+  return workloadAgent;
 }
 
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
-  const agent = await getCalAgent();
+  const agent = await getWorkloadAgent();
   const result = agent.stream({
     messages: convertToModelMessages(messages),
     providerOptions: {

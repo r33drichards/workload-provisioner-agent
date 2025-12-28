@@ -93,28 +93,16 @@ const ThreadWelcome: FC = () => {
             exit={{ opacity: 0, y: 10 }}
             className="aui-thread-welcome-message-motion-1 text-2xl font-semibold"
           >
-            Schedule your bocce tournament in plain language.
+            Optimize your AWS workload provisioning costs.
           </m.div>
           <m.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ delay: 0.2 }}
-            className="aui-thread-welcome-message-motion-3 mt-6 flex flex-col gap-3"
+            className="aui-thread-welcome-message-motion-3 mt-6 text-muted-foreground"
           >
-            <a
-              href="webcal://rwendt1337%40gmail.com:%23XZ%235N4B%2AZvoBC@docker-radicale-production.up.railway.app/rwendt1337%40gmail.com/470dd3b7-a61a-b0da-587b-82f593b06d4b/"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
-            >
-              📅 Subscribe to Bocce Calendar (One-Click, Read-Only)
-            </a>
-            <a
-              href="/api/install-calendar"
-              download="bocce-calendar.mobileconfig"
-              className="inline-flex items-center gap-2 rounded-lg border border-primary bg-background px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-accent transition-colors"
-            >
-              ⚙️ Install Full Calendar Access (Read/Write)
-            </a>
+            Tell me about your workload requirements and I'll help you find the most cost-effective AWS instance configuration.
           </m.div>
         </div>
       </div>

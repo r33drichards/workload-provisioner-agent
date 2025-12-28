@@ -1,11 +1,13 @@
-This is the [assistant-ui](https://github.com/Yonom/assistant-ui) starter project.
+# AWS Workload Provisioner Agent
+
+An AI-powered assistant that helps you optimize AWS workload provisioning and reduce infrastructure costs.
 
 ## Getting Started
 
-First, add your OpenAI API key to `.env.local` file:
+First, add your Anthropic API key to `.env.local` file:
 
 ```
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ANTHROPIC_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Then, run the development server:
@@ -22,4 +24,11 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start chatting with the agent by describing your workload requirements. The AI will help you find the most cost-effective AWS instance configuration.
+
+## Features
+
+- **Workload Analysis**: Describe your compute, memory, storage, and network needs
+- **Cost Optimization**: Uses constraint programming (CSP) to bin-pack workloads across available instance types
+- **AWS Instance Recommendations**: Access to AWS instance catalog with pricing information
+- **Interactive Clarifications**: The agent asks follow-up questions to better understand your requirements
