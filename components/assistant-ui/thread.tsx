@@ -102,7 +102,7 @@ const ThreadWelcome: FC = () => {
             transition={{ delay: 0.2 }}
             className="aui-thread-welcome-message-motion-3 mt-6 text-muted-foreground"
           >
-            Tell me about your workload requirements and I'll help you find the most cost-effective AWS instance configuration.
+            Tell me about your workload requirements and I&apos;ll help you find the most cost-effective AWS instance configuration.
           </m.div>
         </div>
       </div>
