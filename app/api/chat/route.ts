@@ -27,28 +27,66 @@ function withTimeout<T>(
 async function initializeAgent() {
   console.log("[chat] Starting agent initialization...");
 
-  // Use local MCP server for testing (run: node local-mcp-server.mjs)
-  const LOCAL_MCP_URL = "http://localhost:3001/sse";
+  // MCP server URLs - use env vars for local testing, defaults to remote servers
+  const MINIZINC_URL =
+    process.env.MINIZINC_MCP_URL || "https://minizinc-mcp.up.railway.app/sse";
+  const INSTANCES_URL =
+    process.env.INSTANCES_MCP_URL ||
+    "https://instances-mcp.vantage.sh/mcp/e1e3a775-73b5-4afb-86c0-f433c8144b5a";
 
-  console.log("[chat] Connecting to local MCP server...");
-  const mcpClient = await withTimeout(
+  // Connect to MiniZinc MCP server
+  console.log("[chat] Connecting to MiniZinc MCP server:", MINIZINC_URL);
+  const minizinc = await withTimeout(
     experimental_createMCPClient({
       transport: {
         type: "sse",
-        url: LOCAL_MCP_URL,
+        url: MINIZINC_URL,
       },
     }),
     30000,
-    "MCP connection timed out after 30s",
+    "MiniZinc MCP connection timed out after 30s",
   );
-  console.log("[chat] MCP connected, fetching tools...");
+  console.log("[chat] MiniZinc MCP connected, fetching tools...");
 
-  const tools = await withTimeout(
-    mcpClient.tools(),
+  const toolSetMinizinc = await withTimeout(
+    minizinc.tools(),
     10000,
-    "MCP tools fetch timed out after 10s",
+    "MiniZinc tools fetch timed out after 10s",
   );
-  console.log("[chat] Tools loaded:", Object.keys(tools).join(", "));
+  console.log(
+    "[chat] MiniZinc tools loaded:",
+    Object.keys(toolSetMinizinc).join(", "),
+  );
+
+  // Connect to Instances MCP server
+  console.log("[chat] Connecting to Instances MCP server:", INSTANCES_URL);
+  const instances = await withTimeout(
+    experimental_createMCPClient({
+      transport: {
+        type: "sse",
+        url: INSTANCES_URL,
+      },
+    }),
+    30000,
+    "Instances MCP connection timed out after 30s",
+  );
+  console.log("[chat] Instances MCP connected, fetching tools...");
+
+  const toolSetInstances = await withTimeout(
+    instances.tools(),
+    10000,
+    "Instances tools fetch timed out after 10s",
+  );
+  console.log(
+    "[chat] Instances tools loaded:",
+    Object.keys(toolSetInstances).join(", "),
+  );
+
+  const tools = {
+    ...toolSetMinizinc,
+    ...toolSetInstances,
+  };
+  console.log("[chat] All tools loaded:", Object.keys(tools).join(", "));
 
   console.log("[chat] Creating agent with tools:", Object.keys(tools).join(", "));
 
