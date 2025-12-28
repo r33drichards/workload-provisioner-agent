@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>CalDAVAccountDescription</key>
+            <string>Bocce Calendar</string>
+            <key>CalDAVHostName</key>
+            <string>docker-radicale-production.up.railway.app</string>
+            <key>CalDAVPort</key>
+            <integer>443</integer>
+            <key>CalDAVPrincipalURL</key>
+            <string>https://docker-radicale-production.up.railway.app/rwendt1337@gmail.com/</string>
+            <key>CalDAVUseSSL</key>
+            <true/>
+            <key>CalDAVUsername</key>
+            <string>rwendt1337@gmail.com</string>
+            <key>CalDAVPassword</key>
+            <string>#XZ#5N4B*ZvoBC</string>
+            <key>PayloadDescription</key>
+            <string>Configures CalDAV account for Bocce Calendar</string>
+            <key>PayloadDisplayName</key>
+            <string>Bocce CalDAV Account</string>
+            <key>PayloadIdentifier</key>
+            <string>com.bocce.caldav.account</string>
+            <key>PayloadType</key>
+            <string>com.apple.caldav.account</string>
+            <key>PayloadUUID</key>
+            <string>A1B2C3D4-E5F6-47G8-H9I0-J1K2L3M4N5O6</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+        </dict>
+    </array>
+    <key>PayloadDisplayName</key>
+    <string>Bocce Calendar Configuration</string>
+    <key>PayloadIdentifier</key>
+    <string>com.bocce.caldav</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>B2C3D4E5-F6G7-48H9-I0J1-K2L3M4N5O6P7</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>
