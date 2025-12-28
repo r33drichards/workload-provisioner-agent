@@ -125,8 +125,13 @@ export async function POST(req: Request) {
 
   try {
     const { messages }: { messages: UIMessage[] } = await req.json();
+    const lastMessage = messages[messages.length - 1];
+    const lastMessagePreview = lastMessage?.parts
+      ?.map((part) => (part.type === "text" ? part.text : `[${part.type}]`))
+      .join("")
+      .substring(0, 100);
     console.log(
-      `[chat:${requestId}] Parsed ${messages.length} messages, last message: "${messages[messages.length - 1]?.content?.toString().substring(0, 100)}..."`,
+      `[chat:${requestId}] Parsed ${messages.length} messages, last message (${lastMessage?.role}): "${lastMessagePreview}..."`,
     );
 
     console.log(`[chat:${requestId}] Getting agent...`);
