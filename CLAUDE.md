@@ -4,14 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 15 application that uses AI agents (via Anthropic Claude) to manage calendars and scheduling. The app integrates with:
-- **CalDAV** (via MCP server) for calendar operations
-- **MiniZinc** (constraint solver via MCP server) for schedule optimization
+This is a Next.js 15 application that uses AI agents (via Anthropic Claude) to help users optimize AWS workload provisioning and reduce infrastructure costs. The app integrates with:
+
+- **Instances MCP** (via SSE transport) for AWS instance catalog and pricing data
+- **MiniZinc** (constraint solver via MCP server) for workload optimization using constraint programming
 - **assistant-ui** for the chat interface
 
 ## Development Commands
 
 ### Running the Application
+
 ```bash
 npm run dev           # Start development server with Turbopack (http://localhost:3000)
 npm run build         # Production build
@@ -19,6 +21,7 @@ npm start             # Start production server
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint          # Run ESLint
 npm run prettier      # Check code formatting
@@ -26,22 +29,24 @@ npm run prettier:fix  # Fix code formatting
 ```
 
 ### Environment Setup
+
 Copy `.env.example` to `.env.local` and configure:
-- `OPENAI_API_KEY` - Required for OpenAI models (if used)
-- `CALDAV_PASSWORD` - Required for CalDAV MCP server authentication
+
+- `ANTHROPIC_API_KEY` - Required for Claude models
 - `NEXT_PUBLIC_ASSISTANT_BASE_URL` - Optional for assistant-ui cloud persistence
 
 ## Architecture
 
 ### AI Agent System (`app/api/chat/route.ts`)
 
-The core agent (`calAgent`) is built using Vercel AI SDK's Agent API with:
+The core agent (`workloadAgent`) is built using Vercel AI SDK's Agent API with:
+
 - **Model**: `claude-haiku-4-5-20251001` with extended reasoning (12k token budget)
 - **Tools**: Combined toolset from two MCP servers
-  - MiniZinc (via SSE transport): Constraint solving for schedule optimization
-  - CalDAV (via stdio transport): Calendar CRUD operations
+  - MiniZinc (via SSE transport): Constraint solving for workload optimization
+  - Instances MCP (via SSE transport): AWS instance catalog and pricing data
 - **Stop condition**: Maximum 1000 steps per conversation
-- **System prompt**: Configured to work with a "bocce calendar" and provide task summaries
+- **System prompt**: Configured to help with AWS workload provisioning and cost optimization using constraint programming
 
 The agent streams responses using `toUIMessageStreamResponse()` for real-time UI updates.
 
@@ -51,12 +56,11 @@ Two MCP servers are initialized at module load:
 
 1. **MiniZinc MCP** (HTTP/SSE)
    - URL: `https://minizinc-mcp.up.railway.app/sse`
-   - Provides constraint solver tools
+   - Provides constraint solver tools for workload optimization
 
-2. **CalDAV MCP** (stdio)
-   - Command: `npx -y github:r33drichards/caldav-mcp`
-   - CalDAV server: `https://docker-radicale-production.up.railway.app`
-   - Provides calendar management tools
+2. **Instances MCP** (HTTP/SSE)
+   - URL: `https://instances-mcp.vantage.sh/mcp/e1e3a775-73b5-4afb-86c0-f433c8144b5a`
+   - Provides AWS instance catalog and pricing data
 
 ### Frontend Architecture
 
@@ -73,6 +77,7 @@ Two MCP servers are initialized at module load:
 ### Path Aliases
 
 TypeScript configured with `@/*` aliasing to repository root:
+
 - `@/components` → `/components`
 - `@/lib` → `/lib`
 - `@/hooks` → `/hooks`
@@ -93,7 +98,6 @@ TypeScript configured with `@/*` aliasing to repository root:
 
 ## Important Notes
 
-- The CalDAV password is currently hardcoded in `app/api/chat/route.ts` as a fallback - this is okay because its not secret information really.
 - MCP clients are created at module initialization (top-level await), so server startup may be slower
-- The agent uses extended thinking with a 12k token budget for complex scheduling tasks
+- The agent uses extended thinking with a 12k token budget for complex optimization tasks
 - The `mcp-tools-ref.ts` file in the root is excluded from TypeScript compilation (likely reference documentation)
