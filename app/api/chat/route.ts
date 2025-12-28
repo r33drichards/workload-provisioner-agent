@@ -27,58 +27,28 @@ function withTimeout<T>(
 async function initializeAgent() {
   console.log("[chat] Starting agent initialization...");
 
-  // Connect to MiniZinc MCP server
-  console.log("[chat] Connecting to MiniZinc MCP server...");
-  const minizinc = await withTimeout(
+  // Use local MCP server for testing (run: node local-mcp-server.mjs)
+  const LOCAL_MCP_URL = "http://localhost:3001/sse";
+
+  console.log("[chat] Connecting to local MCP server...");
+  const mcpClient = await withTimeout(
     experimental_createMCPClient({
       transport: {
         type: "sse",
-        url: "https://minizinc-mcp.up.railway.app/sse",
+        url: LOCAL_MCP_URL,
       },
     }),
     30000,
-    "MiniZinc MCP connection timed out after 30s",
+    "MCP connection timed out after 30s",
   );
-  console.log("[chat] MiniZinc MCP connected, fetching tools...");
+  console.log("[chat] MCP connected, fetching tools...");
 
-  const toolSetMinizinc = await withTimeout(
-    minizinc.tools(),
+  const tools = await withTimeout(
+    mcpClient.tools(),
     10000,
-    "MiniZinc tools fetch timed out after 10s",
+    "MCP tools fetch timed out after 10s",
   );
-  console.log(
-    "[chat] MiniZinc tools loaded:",
-    Object.keys(toolSetMinizinc).join(", "),
-  );
-
-  // Connect to Instances MCP server for AWS instance provisioning
-  console.log("[chat] Connecting to Instances MCP server...");
-  const instances = await withTimeout(
-    experimental_createMCPClient({
-      transport: {
-        type: "sse",
-        url: "https://instances-mcp.vantage.sh/mcp/e1e3a775-73b5-4afb-86c0-f433c8144b5a",
-      },
-    }),
-    30000,
-    "Instances MCP connection timed out after 30s",
-  );
-  console.log("[chat] Instances MCP connected, fetching tools...");
-
-  const toolSetInstances = await withTimeout(
-    instances.tools(),
-    10000,
-    "Instances tools fetch timed out after 10s",
-  );
-  console.log(
-    "[chat] Instances tools loaded:",
-    Object.keys(toolSetInstances).join(", "),
-  );
-
-  const tools = {
-    ...toolSetMinizinc,
-    ...toolSetInstances,
-  };
+  console.log("[chat] Tools loaded:", Object.keys(tools).join(", "));
 
   console.log("[chat] Creating agent with tools:", Object.keys(tools).join(", "));
 
