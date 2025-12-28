@@ -27,9 +27,7 @@ import { Button } from "@/components/ui/button";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
 import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import {
-  UserMessageAttachments,
-} from "@/components/assistant-ui/attachment";
+import { UserMessageAttachments } from "@/components/assistant-ui/attachment";
 
 import { cn } from "@/lib/utils";
 
@@ -102,7 +100,8 @@ const ThreadWelcome: FC = () => {
             transition={{ delay: 0.2 }}
             className="aui-thread-welcome-message-motion-3 mt-6 text-muted-foreground"
           >
-            Tell me about your workload requirements and I&apos;ll help you find the most cost-effective AWS instance configuration.
+            Tell me about your workload requirements and I&apos;ll help you find
+            the most cost-effective AWS instance configuration.
           </m.div>
         </div>
       </div>
@@ -110,16 +109,15 @@ const ThreadWelcome: FC = () => {
   );
 };
 
-
 const Composer: FC = () => {
   const handlePaste = (e: React.ClipboardEvent) => {
     // Only allow text paste, prevent images/files
-    const text = e.clipboardData.getData('text/plain');
+    const text = e.clipboardData.getData("text/plain");
     if (e.clipboardData.files.length > 0 || e.clipboardData.items.length > 1) {
       e.preventDefault();
       // If there's text, insert it manually
       if (text) {
-        document.execCommand('insertText', false, text);
+        document.execCommand("insertText", false, text);
       }
     }
   };
@@ -191,10 +189,10 @@ const MessageError: FC = () => {
 const ReasoningContentComponent: FC<{ text: string }> = ({ text }) => {
   return (
     <details className="aui-reasoning-section mb-3 rounded-md border border-blue-500/30 bg-blue-50 dark:bg-blue-950/20">
-      <summary className="cursor-pointer px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100">
+      <summary className="cursor-pointer px-4 py-2 text-sm font-medium text-blue-700 hover:text-blue-900 dark:text-blue-300 dark:hover:text-blue-100">
         💭 View reasoning process
       </summary>
-      <div className="border-t border-blue-500/20 px-4 py-3 text-sm leading-relaxed text-blue-900 dark:text-blue-200 whitespace-pre-wrap">
+      <div className="border-t border-blue-500/20 px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap text-blue-900 dark:text-blue-200">
         {text}
       </div>
     </details>

@@ -1,16 +1,24 @@
 import type { ToolCallMessagePartComponent } from "@assistant-ui/react";
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon, Loader2Icon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  Loader2Icon,
+} from "lucide-react";
 import { useState, memo, useMemo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 // Truncate long strings for performance
-const truncateString = (str: string, maxLength: number = 1000): { text: string; isTruncated: boolean } => {
+const truncateString = (
+  str: string,
+  maxLength: number = 1000,
+): { text: string; isTruncated: boolean } => {
   if (str.length <= maxLength) {
     return { text: str, isTruncated: false };
   }
   return {
     text: str.slice(0, maxLength) + "...",
-    isTruncated: true
+    isTruncated: true,
   };
 };
 
@@ -60,11 +68,16 @@ const ToolFallbackUI = ({
   // Memoize formatted result to avoid re-stringifying on every render
   const formattedResult = useMemo(() => {
     if (result === undefined) return null;
-    return typeof result === "string" ? result : JSON.stringify(result, null, 2);
+    return typeof result === "string"
+      ? result
+      : JSON.stringify(result, null, 2);
   }, [result]);
 
   // Truncate args and result for better performance
-  const truncatedArgs = useMemo(() => truncateString(argsText, 1000), [argsText]);
+  const truncatedArgs = useMemo(
+    () => truncateString(argsText, 1000),
+    [argsText],
+  );
   const truncatedResult = useMemo(() => {
     if (!formattedResult) return { text: "", isTruncated: false };
     return truncateString(formattedResult, 1000);
@@ -81,7 +94,7 @@ const ToolFallbackUI = ({
         <p className="aui-tool-fallback-title flex-grow">
           {isComplete ? "Used" : "Using"} tool: <b>{toolName}</b>
           {elapsedTime !== null && (
-            <span className="ml-2 text-sm text-muted-foreground font-normal">
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
               ({formatElapsedTime(elapsedTime)})
             </span>
           )}
@@ -93,7 +106,7 @@ const ToolFallbackUI = ({
       {!isCollapsed && (
         <div className="aui-tool-fallback-content flex flex-col gap-2 border-t pt-2">
           <div className="aui-tool-fallback-args-root px-4">
-            <pre className="aui-tool-fallback-args-value whitespace-pre-wrap max-h-96 overflow-y-auto">
+            <pre className="aui-tool-fallback-args-value max-h-96 overflow-y-auto whitespace-pre-wrap">
               {showFullArgs ? argsText : truncatedArgs.text}
             </pre>
             {truncatedArgs.isTruncated && (
@@ -110,7 +123,7 @@ const ToolFallbackUI = ({
               <p className="aui-tool-fallback-result-header font-semibold">
                 Result:
               </p>
-              <pre className="aui-tool-fallback-result-content whitespace-pre-wrap max-h-96 overflow-y-auto">
+              <pre className="aui-tool-fallback-result-content max-h-96 overflow-y-auto whitespace-pre-wrap">
                 {showFullResult ? formattedResult : truncatedResult.text}
               </pre>
               {truncatedResult.isTruncated && (
@@ -131,7 +144,13 @@ const ToolFallbackUI = ({
 
 // Component for use with assistant-ui framework
 const ToolFallbackComponent: ToolCallMessagePartComponent = (props) => {
-  return <ToolFallbackUI toolName={props.toolName} argsText={props.argsText} result={props.result} />;
+  return (
+    <ToolFallbackUI
+      toolName={props.toolName}
+      argsText={props.argsText}
+      result={props.result}
+    />
+  );
 };
 
 ToolFallbackComponent.displayName = "ToolFallback";
@@ -140,4 +159,5 @@ ToolFallbackComponent.displayName = "ToolFallback";
 export const ToolFallback = memo(ToolFallbackComponent);
 
 // Export standalone version for use outside assistant-ui
-export const ToolFallbackStandalone = memo<ToolFallbackStandaloneProps>(ToolFallbackUI);
+export const ToolFallbackStandalone =
+  memo<ToolFallbackStandaloneProps>(ToolFallbackUI);
